@@ -17,12 +17,11 @@ A minimal utility to convert the [COCO Body Parts annotations](https://github.co
 | Right foot |  7 |  77870 |  3100 |
 | Total      |    | 985700 | 41821 |
 
-| Image type |  Train |  Val |
-|:-----------|-------:|-----:|
-| Positive   |  64115 | 2693 |
-| Negative   |  54172 | 2307 |
-| Total      | 118287 | 5000 |
-
+| Split | Image count |
+|:------|------------:|
+| Train |       64115 |
+| Val   |        2693 |
+| Total |       66808 |
 
 ## Requirements
 
@@ -39,7 +38,7 @@ python convert.py <input_path> <output_path> --include <coco_path>
 Arguments:
 - `input_path`: Path to the Human Parts JSON in Hier-R-CNN format (e.g., `person_humanparts_train2017.json`).
 - `output_path`: Destination path for the converted JSON in COCO format.
-- `--include <coco_path>` (optional): Path to an existing COCO annotations file (e.g., `instances_train2017.json`). When provided, dataset metadata and negative images are merged from this file.
+- `--include <coco_path>` (optional): Path to an existing COCO annotations file (e.g., `instances_train2017.json`). When provided, dataset metadata are merged from this file.
 
 ## License
 

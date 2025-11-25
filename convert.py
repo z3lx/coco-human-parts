@@ -33,28 +33,33 @@ def convert(
         "date_created": date.today().strftime("%Y/%m/%d")
     }
 
-    images = coco_data["images"] if coco_data else [
-        {
-            "id": image["id"],
-            "width": image["width"],
-            "height": image["height"],
-            "file_name": image["file_name"],
-            "license": None,
-            "flickr_url": None,
-            "coco_url": None,
-            "date_captured": None
-        }
-        for image in input_data["images"]
-    ]
+    images = input_data["images"]
 
-    image_id_map = {
-        image["id"]: (
-            int(Path(image["file_name"]).stem)
-            if coco_data else image["id"]
-        )
-        for image in input_data["images"]
-    }
+    # Update images ID
+    image_map = {image["id"]: image for image in images}
+    for image in images:
+        image["id"] = int(Path(image["file_name"]).stem)
+    for annotation in input_data["annotations"]:
+        image_id = annotation["image_id"]
+        annotation["image_id"] = image_map[image_id]["id"]
 
+    # Update images metadata
+    if coco_data:
+        coco_images = coco_data["images"]
+        image_map = {image["id"]: image for image in coco_images}
+        for image in images:
+            coco_image = image_map[image["id"]]
+            image.update({
+                k: coco_image[k]
+                for k in (
+                    "license",
+                    "flickr_url",
+                    "coco_url",
+                    "date_captured"
+                )
+            })
+
+    # Build annotations
     annotations = []
     for annotation in input_data["annotations"]:
         def append_annotation(
@@ -66,7 +71,7 @@ def convert(
         ) -> None:
             annotations.append({
                 "id": len(annotations) + 1,
-                "image_id": image_id_map[annotation["image_id"]],
+                "image_id": annotation["image_id"],
                 "category_id": category_id,
                 "segmentation": [],
                 "area": width * height,
